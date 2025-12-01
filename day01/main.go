@@ -19,7 +19,8 @@ func (s *Store) Increment() {
 func main() {
 	lines := []string{}
 	curr := 50
-	store := Store{Count: 0}
+	store_a := Store{Count: 0}
+	store_b := Store{Count: 0}
 
 	// read input file
 	f, err := os.Open("./input.txt")
@@ -34,17 +35,16 @@ func main() {
 
 	for _, line := range lines {
 		dir, amt := ParseDirection(line)
-
 		rotFn := RotateRight
-
 		if dir == "L" {
 			rotFn = RotateLeft
 		}
-		curr = rotFn(curr, amt)
-		CheckForZero(curr, &store)
+		curr = rotFn(curr, amt, &store_b)
+		CheckForZero(curr, &store_a)
 	}
 
-	fmt.Printf("password A: %d\n", store.Count)
+	fmt.Printf("password A: %d\n", store_a.Count)
+	fmt.Printf("password B: %d\n", store_b.Count)
 }
 
 func ParseDirection(input string) (dir string, amt int) {
@@ -58,19 +58,29 @@ func ParseDirection(input string) (dir string, amt int) {
 	return dir, amt
 }
 
-func RotateRight(start int, dist int) (end int) {
+func RotateRight(start int, dist int, store *Store) (end int) {
 	end = start + dist
 	for end > 99 {
+		store.Increment()
 		end = end - 100
 	}
 	return end
 }
 
-func RotateLeft(start int, dist int) (end int) {
-	end = start - dist
-	for end < 0 {
-		end = 100 + end
+func RotateLeft(start int, dist int, store *Store) (end int) {
+	end = start
+
+	for dist > 0 {
+		dist--
+		end--
+		if end == 0 {
+			store.Increment()
+		}
+		if end < 0 {
+			end = end + 100
+		}
 	}
+
 	return end
 }
 
