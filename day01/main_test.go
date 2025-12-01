@@ -40,8 +40,8 @@ func TestRotateLeft(t *testing.T) {
 }
 
 func TestCheckForZero(t *testing.T) {
-	store := store{count: 0}
-	CheckForZero(1, &store)
+	store := Store{count: 0}
+	CheckForZero(1, store)
 
 	if store.count != 0 {
 		t.Errorf("wanted %d, got %d", 0, store.count)

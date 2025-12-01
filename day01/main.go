@@ -8,10 +8,18 @@ import (
 	"strconv"
 )
 
+type Store struct {
+	Count int
+}
+
+func (s *Store) Increment() {
+	s.Count++
+}
+
 func main() {
 	lines := []string{}
 	curr := 50
-	count := 0
+	store := Store{Count: 0}
 
 	// read input file
 	f, err := os.Open("./input.txt")
@@ -33,10 +41,10 @@ func main() {
 			rotFn = RotateLeft
 		}
 		curr = rotFn(curr, amt)
-		CheckForZero(curr, &count)
+		CheckForZero(curr, &store)
 	}
 
-	fmt.Printf("password: %d\n", count)
+	fmt.Printf("password A: %d\n", store.Count)
 }
 
 func ParseDirection(input string) (dir string, amt int) {
@@ -52,8 +60,8 @@ func ParseDirection(input string) (dir string, amt int) {
 
 func RotateRight(start int, dist int) (end int) {
 	end = start + dist
-	if end > 99 {
-		end = end % 100
+	for end > 99 {
+		end = end - 100
 	}
 	return end
 }
@@ -66,8 +74,8 @@ func RotateLeft(start int, dist int) (end int) {
 	return end
 }
 
-func CheckForZero(input int, count *int) {
+func CheckForZero(input int, store *Store) {
 	if input == 0 {
-		*count++
+		store.Increment()
 	}
 }
