@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 type test struct {
 	in    int
@@ -46,9 +48,11 @@ func TestRotateLeft(t *testing.T) {
 		store := Store{Count: 0}
 		result := RotateLeft(tt.in, tt.dist, &store)
 		if result != tt.out {
+			t.Error(tt.in, tt.dist, tt.count)
 			t.Errorf("wanted %d, got %d", tt.out, result)
 		}
 		if store.Count != tt.count {
+			t.Error(tt.in, tt.dist, tt.count)
 			t.Errorf("wanted %d, got %d", tt.count, store.Count)
 		}
 	}

@@ -27,6 +27,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Problem reading file: %v", err)
 	}
+	defer f.Close()
+
 	s := bufio.NewScanner(f)
 	for s.Scan() {
 		next := s.Text()
@@ -62,24 +64,24 @@ func RotateRight(start int, dist int, store *Store) (end int) {
 	end = start + dist
 	for end > 99 {
 		store.Increment()
-		end = end - 100
+		end -= 100
 	}
 	return end
 }
 
 func RotateLeft(start int, dist int, store *Store) (end int) {
-	end = start
-
-	for dist > 0 {
-		dist--
-		end--
-		if end == 0 {
-			store.Increment()
-		}
-		if end < 0 {
-			end = end + 100
-		}
+	for dist >= 100 {
+		dist -= 100
+		store.Increment()
 	}
+
+	end = start - dist
+
+	if end < 0 {
+		end += 100
+	}
+
+	CheckForZero(end, store)
 
 	return end
 }
