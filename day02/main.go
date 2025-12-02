@@ -28,18 +28,21 @@ func main() {
 
 	}
 
-	sum := 0
+	sumA := 0
+	sumB := 0
 	for _, r := range ranges {
 		start, end := ParseRange(r)
 
 		i := start
 		for i <= end {
-			sum = AddInvalidId(i, sum)
+			sumA = AddInvalidId(i, sumA, IsInvalidId)
+			sumB = AddInvalidId(i, sumB, IsInvalidIdB)
 			i++
 		}
 	}
 
-	fmt.Printf("day 1 sum: %d\n", sum)
+	fmt.Printf("part A sum: %d\n", sumA)
+	fmt.Printf("part B sum: %d\n", sumB)
 }
 
 func IsInvalidId(id int) bool {
@@ -48,11 +51,12 @@ func IsInvalidId(id int) bool {
 	return s[mid:] == s[:mid]
 }
 
-func AddInvalidId(id int, sum int) int {
-	if IsInvalidId(id) {
-		return sum + id
+func AddInvalidId(id int, sum int, findInvalid func(id int) bool) int {
+	addend := 0
+	if findInvalid(id) {
+		addend = id
 	}
-	return sum
+	return sum + addend
 }
 
 func ParseRange(r string) (start int, end int) {
@@ -68,4 +72,9 @@ func ParseRange(r string) (start int, end int) {
 	}
 
 	return start, end
+}
+
+func IsInvalidIdB(id int) bool {
+	sId := strconv.Itoa(id)
+	return strings.Index((sId + sId)[1:], sId) != len(sId)-1
 }
