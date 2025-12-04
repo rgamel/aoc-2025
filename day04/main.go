@@ -24,18 +24,16 @@ func main() {
 		lines = append(lines, line)
 	}
 
+	run(lines, "Part A", PartA)
+	run(lines, "Part B", PartB)
+}
+
+func run(lines []string, label string, cb func(lines []string) int) {
 	start := time.Now()
-	res := PartA(lines)
+	res := cb(lines)
 	end := time.Now()
 	diff := end.Sub(start)
-	fmt.Printf("Part A: %d, duration: %d\n", res, diff.Microseconds())
-
-	start = time.Now()
-	res = PartB(lines)
-	end = time.Now()
-	diff = end.Sub(start)
-	fmt.Printf("Part B: %d, duration: %d\n", res, diff.Microseconds())
-
+	fmt.Printf("%s: %d, duration: %d\n", label, res, diff.Microseconds())
 }
 
 func PartA(matrix []string) int {
