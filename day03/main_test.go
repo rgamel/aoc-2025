@@ -16,7 +16,10 @@ func TestFindLineJoltage(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		res := FindLineJoltage(tt.in)
+		res, err := FindMaxLineJoltage(tt.in, 2)
+		if err != nil {
+			t.Error(err)
+		}
 		if res != tt.out {
 			t.Errorf("got %d, want %d", res, tt.out)
 		}
@@ -33,7 +36,10 @@ func TestFindMaxLineJoltage(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		res := FindMaxLineJoltage(tt.in)
+		res, err := FindMaxLineJoltage(tt.in, 12)
+		if err != nil {
+			t.Error(err)
+		}
 		if res != tt.out {
 			t.Errorf("got %d, want %d", res, tt.out)
 		}

@@ -11,7 +11,7 @@ import (
 func main() {
 	f, err := os.Open("./input.txt")
 	if err != nil {
-		log.Fatal("problem opening input file")
+		log.Fatalf("problem opening input file: %v", err)
 	}
 	defer f.Close()
 
@@ -20,49 +20,40 @@ func main() {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		text := scanner.Text()
-		joltage += FindLineJoltage(text)
-		maxJoltage += FindMaxLineJoltage(text)
+		lineJoltage, err := FindMaxLineJoltage(text, 2)
+		if err != nil {
+			log.Fatal(err)
+		}
+		joltage += lineJoltage
+		maxLineJoltage, err := FindMaxLineJoltage(text, 12)
+		maxJoltage += maxLineJoltage
 	}
 	fmt.Printf("part a: %d\n", joltage)
 	fmt.Printf("part b: %d\n", maxJoltage)
 }
 
-func FindLineJoltage(line string) int {
-	result := 0
-	for i := range line {
-		// TODO: exit early if 9
-		for j := i + 1; j < len(line); j++ {
-			// TODO: exit early if 9
-			v, err := strconv.Atoi(fmt.Sprintf("%c%c", line[i], line[j]))
-			if err != nil {
-				log.Fatal("problem reading line")
-			}
-			if v > result {
-				result = v
-			}
-		}
-	}
-	return result
-}
-
-func FindMaxLineJoltage(line string) int {
+func FindMaxLineJoltage(line string, batteries int) (int, error) {
 	p1 := 0
-	p2 := len(line) - 12
+	p2 := len(line) - batteries
 	output := ""
 
 	for p2 < len(line) {
 		subStr := line[p1 : p2+1]
-		subMax, idx, _ := findMaxDigit(subStr)
+		subMax, idx, err := findMaxDigit(subStr)
+		if err != nil {
+			return -1, err
+		}
 		output = output + fmt.Sprint(subMax)
 		p1 += idx + 1
 		p2++
 	}
-	parsed, _ := strconv.Atoi(output)
-	return parsed
-}
 
-func findMaxStartIndex(line string, batteryCount int) int {
-	return len(line) - batteryCount
+	parsed, err := strconv.Atoi(output)
+	if err != nil {
+		log.Fatalf("problem converting output: %v", err)
+	}
+
+	return parsed, nil
 }
 
 func findMaxDigit(s string) (int, int, error) {
