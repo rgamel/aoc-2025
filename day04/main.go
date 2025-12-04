@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -23,8 +24,18 @@ func main() {
 		lines = append(lines, line)
 	}
 
-	fmt.Printf("Part A: %d\n", PartA(lines))
-	fmt.Printf("Part B: %d\n", PartB(lines))
+	start := time.Now()
+	res := PartA(lines)
+	end := time.Now()
+	diff := end.Sub(start)
+	fmt.Printf("Part A: %d, duration: %d\n", res, diff.Microseconds())
+
+	start = time.Now()
+	res = PartB(lines)
+	end = time.Now()
+	diff = end.Sub(start)
+	fmt.Printf("Part B: %d, duration: %d\n", res, diff.Microseconds())
+
 }
 
 func PartA(matrix []string) int {
@@ -83,10 +94,4 @@ func ScanAdjacent(row int, col int, matrix []string) int {
 		}
 	}
 	return 1
-}
-
-func printMatrix(matrix []string) {
-	for _, line := range matrix {
-		fmt.Println(line)
-	}
 }
