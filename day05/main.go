@@ -1,25 +1,46 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
+
+	utils "aoc2025/shared"
 )
 
 func main() {
-	ranges, ids := getInputs("./input.txt")
+	lines := utils.ReadInput("./input.txt")
+	ranges, ids := getInputs(lines)
 	run(ids, ranges, "Part A", PartA)
 	run(ids, ranges, "Part B", PartB)
 }
 
 type IdRange struct {
-	Min int
-	Max int
+	Min, Max int
+}
+
+func (r *IdRange) Has(id int) bool {
+	return r.Min <= id && r.Max >= id
+}
+
+func (r *IdRange) Overlaps(other IdRange) bool {
+	if r.Min == other.Min {
+		return true
+	}
+	if r.Min < other.Min {
+		return other.Min <= r.Max
+	}
+
+	return other.Max >= r.Min
+
+}
+
+func (r *IdRange) Merge(other IdRange) {
+	r.Min = min(r.Min, other.Min)
+	r.Max = max(r.Max, other.Max)
 }
 
 type Set struct {
@@ -40,18 +61,9 @@ func (s *Set) Size() int {
 	return len(s.elements)
 }
 
-func getInputs(filename string) (ranges []IdRange, ids []int) {
-	f, err := os.Open(filename)
-	if err != nil {
-		log.Fatalf("problem reading input file: %v\n", err)
-	}
-	defer f.Close()
-
+func getInputs(lines []string) (ranges []IdRange, ids []int) {
 	isIds := false
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+	for _, line := range lines {
 		if line == "" {
 			isIds = true
 		} else {
@@ -98,7 +110,7 @@ func PartA(ids []int, ranges []IdRange) int {
 	fresh := NewSet()
 	for _, id := range ids {
 		for _, idRange := range ranges {
-			if IsInRange(idRange, id) {
+			if idRange.Has(id) {
 				fresh.Add(id)
 
 			}
@@ -107,48 +119,27 @@ func PartA(ids []int, ranges []IdRange) int {
 	return fresh.Size()
 }
 
-func sortByMin(a IdRange, b IdRange) int {
-	if a.Min < b.Min {
-		return -1
-	}
-
-	if a.Min > b.Min {
-		return 1
-	}
-	return 0
-}
-
-func PartB(ids []int, ranges []IdRange) int {
-	// sort ranges by min
-	slices.SortFunc(ranges, sortByMin)
+func PartB(ids []int, ranges []IdRange) (freshIds int) {
 	// merge ranges when max of next range is inside current range
 	merged := mergeSortedRanges(ranges)
-
-	total := 0
 	for _, r := range merged {
-		// do max - min + 1
-		total += r.Max - r.Min + 1
+		freshIds += r.Max - r.Min + 1
 	}
-	return total
+	return freshIds
 }
 
-func IsInRange(idRange IdRange, id int) bool {
-	return id >= idRange.Min && id <= idRange.Max
+func sortByMin(a IdRange, b IdRange) int {
+	return a.Min - b.Min
 }
 
 func mergeSortedRanges(ranges []IdRange) []IdRange {
+	slices.SortFunc(ranges, sortByMin)
 	for {
 		count := len(ranges)
 		for i := 0; i < len(ranges)-1; i++ {
 			for j := i + 1; j < len(ranges); j++ {
-				if IsInRange(ranges[i], ranges[j].Min) && IsInRange(ranges[i], ranges[j].Max) {
-					// j is completely within i
-					// delete it
-					ranges = deleteFromListAt(ranges, j)
-				} else if IsInRange(ranges[i], ranges[j].Min) && !IsInRange(ranges[i], ranges[j].Max) {
-					// overlap with j starting within i and terminating higher than i
-					// max i's max equal j's, then delete it
-					ranges[i].Max = ranges[j].Max
+				if ranges[i].Overlaps(ranges[j]) {
+					ranges[i].Merge(ranges[j])
 					ranges = deleteFromListAt(ranges, j)
 				}
 			}

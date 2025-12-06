@@ -8,6 +8,21 @@ import (
 	"time"
 )
 
+func ReadInput(filename string) []string {
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("problem reading input file: %v\n", err)
+	}
+	defer f.Close()
+	lines := []string{}
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		lines = append(lines, line)
+	}
+	return lines
+}
+
 func main() {
 
 	f, err := os.Open("./input.txt")

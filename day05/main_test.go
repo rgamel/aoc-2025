@@ -1,12 +1,14 @@
 package main
 
 import (
-	"slices"
 	"testing"
+
+	utils "aoc2025/shared"
 )
 
 func TestPartA(t *testing.T) {
-	ranges, ids := getInputs("./testinput.txt")
+	lines := utils.ReadInput("./testinput.txt")
+	ranges, ids := getInputs(lines)
 	res := PartA(ids, ranges)
 
 	if res != 3 {
@@ -16,7 +18,8 @@ func TestPartA(t *testing.T) {
 }
 
 func TestPartB(t *testing.T) {
-	ranges, ids := getInputs("./testinput.txt")
+	lines := utils.ReadInput("./testinput.txt")
+	ranges, ids := getInputs(lines)
 	res := PartB(ids, ranges)
 
 	if res != 14 {
@@ -37,7 +40,7 @@ func TestIsInRange(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		res := IsInRange(tt.rangeStr, tt.id)
+		res := tt.rangeStr.Has(tt.id)
 		if tt.out != res {
 			t.Errorf("got %v, want %v", res, tt.out)
 		}
@@ -57,7 +60,6 @@ func TestMergeSortedRanges(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		slices.SortFunc(tt.ranges, sortByMin)
 		res := mergeSortedRanges(tt.ranges)
 		t.Log(res)
 
