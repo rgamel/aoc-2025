@@ -2,14 +2,14 @@ package main
 
 import "testing"
 
-type test struct {
+type Test struct {
 	in  int
 	out bool
 }
 
 func TestInvalidId(t *testing.T) {
 
-	tests := []test{
+	tests := []Test{
 		{in: 11, out: true},
 		{in: 22, out: true},
 		{in: 99, out: true},
@@ -75,20 +75,20 @@ func TestParseRange(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		rStart, rEnd := ParseRange(tt.in)
+		r := ParseRange(tt.in)
 
-		if rStart != tt.start {
-			t.Errorf("got %d, want %d", rStart, tt.start)
+		if r.Min != tt.start {
+			t.Errorf("got %d, want %d", r.Min, tt.start)
 		}
 
-		if rEnd != tt.end {
-			t.Errorf("got %d, want %d", rEnd, tt.end)
+		if r.Max != tt.end {
+			t.Errorf("got %d, want %d", r.Max, tt.end)
 		}
 	}
 }
 
 func TestIsInvalidIdB(t *testing.T) {
-	tests := []test{
+	tests := []Test{
 		{in: 11, out: true},
 		{in: 12, out: false},
 		{in: 22, out: true},

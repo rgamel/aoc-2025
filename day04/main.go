@@ -1,44 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"time"
+
+	utils "aoc2025/shared"
 )
 
-func ReadInput(filename string) []string {
-	f, err := os.Open(filename)
-	if err != nil {
-		log.Fatalf("problem reading input file: %v\n", err)
-	}
-	defer f.Close()
-	lines := []string{}
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
-	return lines
-}
-
 func main() {
-
-	f, err := os.Open("./input.txt")
-	if err != nil {
-		log.Fatalf("problem reading input file: %v\n", err)
-	}
-	defer f.Close()
-
-	lines := []string{}
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
-
+	lines := utils.ReadInput("./input.txt")
 	run(lines, "Part A", PartA)
 	run(lines, "Part B", PartB)
 }
@@ -55,7 +25,7 @@ func PartA(matrix []string) int {
 	rolls := 0
 	for rowI := range matrix {
 		for colI := range matrix {
-			rolls += ScanAdjacent(rowI, colI, matrix)
+			rolls += CheckNeighbors(rowI, colI, matrix)
 		}
 	}
 	return rolls
@@ -68,7 +38,7 @@ func PartB(matrix []string) int {
 		curr := 0
 		for row := 0; row < len(matrix); row++ {
 			for col := 0; col < len(matrix[row]); col++ {
-				res := ScanAdjacent(row, col, matrix)
+				res := CheckNeighbors(row, col, matrix)
 				if res == 1 {
 					rolls++
 					curr++
@@ -84,7 +54,7 @@ func PartB(matrix []string) int {
 	return rolls
 }
 
-func ScanAdjacent(row int, col int, matrix []string) int {
+func CheckNeighbors(row int, col int, matrix []string) int {
 	if matrix[row][col] == '.' {
 		return 0
 	}

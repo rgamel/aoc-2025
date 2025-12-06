@@ -11,13 +11,6 @@ import (
 	utils "aoc2025/shared"
 )
 
-func main() {
-	lines := utils.ReadInput("./input.txt")
-	ranges, ids := getInputs(lines)
-	run(ids, ranges, "Part A", PartA)
-	run(ids, ranges, "Part B", PartB)
-}
-
 type IdRange struct {
 	Min, Max int
 }
@@ -61,6 +54,43 @@ func (s *Set) Size() int {
 	return len(s.elements)
 }
 
+func main() {
+	lines := utils.ReadInput("./input.txt")
+	ranges, ids := getInputs(lines)
+	run(ids, ranges, "Part A", PartA)
+	run(ids, ranges, "Part B", PartB)
+}
+
+func run(ids []int, ranges []IdRange, label string, cb func(ids []int, ranges []IdRange) int) {
+	start := time.Now()
+	res := cb(ids, ranges)
+	end := time.Now()
+	diff := end.Sub(start)
+	fmt.Printf("%s: %d, duration: %d\n", label, res, diff.Microseconds())
+}
+
+func PartA(ids []int, ranges []IdRange) int {
+	fresh := NewSet()
+	for _, id := range ids {
+		for _, idRange := range ranges {
+			if idRange.Has(id) {
+				fresh.Add(id)
+
+			}
+		}
+	}
+	return fresh.Size()
+}
+
+func PartB(ids []int, ranges []IdRange) (freshIds int) {
+	// merge ranges when max of next range is inside current range
+	merged := mergeSortedRanges(ranges)
+	for _, r := range merged {
+		freshIds += r.Max - r.Min + 1
+	}
+	return freshIds
+}
+
 func getInputs(lines []string) (ranges []IdRange, ids []int) {
 	isIds := false
 	for _, line := range lines {
@@ -96,36 +126,6 @@ func parseRanges(s string) IdRange {
 	}
 
 	return IdRange{Min: minVal, Max: maxVal}
-}
-
-func run(ids []int, ranges []IdRange, label string, cb func(ids []int, ranges []IdRange) int) {
-	start := time.Now()
-	res := cb(ids, ranges)
-	end := time.Now()
-	diff := end.Sub(start)
-	fmt.Printf("%s: %d, duration: %d\n", label, res, diff.Microseconds())
-}
-
-func PartA(ids []int, ranges []IdRange) int {
-	fresh := NewSet()
-	for _, id := range ids {
-		for _, idRange := range ranges {
-			if idRange.Has(id) {
-				fresh.Add(id)
-
-			}
-		}
-	}
-	return fresh.Size()
-}
-
-func PartB(ids []int, ranges []IdRange) (freshIds int) {
-	// merge ranges when max of next range is inside current range
-	merged := mergeSortedRanges(ranges)
-	for _, r := range merged {
-		freshIds += r.Max - r.Min + 1
-	}
-	return freshIds
 }
 
 func sortByMin(a IdRange, b IdRange) int {

@@ -1,33 +1,33 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
+
+	utils "aoc2025/shared"
 )
 
 func main() {
-	f, err := os.Open("./input.txt")
-	if err != nil {
-		log.Fatalf("problem opening input file: %v", err)
-	}
-	defer f.Close()
-
+	lines := utils.ReadInput("./input.txt")
 	joltage := 0
 	maxJoltage := 0
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		text := scanner.Text()
-		lineJoltage, err := FindMaxLineJoltage(text, 2)
+
+	for _, line := range lines {
+		lineJoltage, err := FindMaxLineJoltage(line, 2)
 		if err != nil {
 			log.Fatal(err)
 		}
 		joltage += lineJoltage
-		maxLineJoltage, err := FindMaxLineJoltage(text, 12)
+
+		maxLineJoltage, err := FindMaxLineJoltage(line, 12)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		maxJoltage += maxLineJoltage
 	}
+
 	fmt.Printf("part a: %d\n", joltage)
 	fmt.Printf("part b: %d\n", maxJoltage)
 }
@@ -50,7 +50,7 @@ func FindMaxLineJoltage(line string, batteries int) (int, error) {
 
 	parsed, err := strconv.Atoi(output)
 	if err != nil {
-		log.Fatalf("problem converting output: %v", err)
+		return -1, err
 	}
 
 	return parsed, nil

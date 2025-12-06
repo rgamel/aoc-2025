@@ -45,7 +45,7 @@ func TestScanAdjacent(t *testing.T) {
 	matrix := getTestMatrix()
 
 	for _, tt := range tests {
-		res := ScanAdjacent(tt.row, tt.col, matrix)
+		res := CheckNeighbors(tt.row, tt.col, matrix)
 		if tt.res != res {
 			t.Errorf("got %d want %d", res, tt.res)
 

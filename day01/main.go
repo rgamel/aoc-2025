@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
+
+	utils "aoc2025/shared"
 )
 
 type Store struct {
@@ -17,23 +17,12 @@ func (s *Store) Increment() {
 }
 
 func main() {
-	lines := []string{}
 	curr := 50
 	store_a := Store{Count: 0}
 	store_b := Store{Count: 0}
 
 	// read input file
-	f, err := os.Open("./input.txt")
-	if err != nil {
-		log.Fatalf("Problem reading file: %v", err)
-	}
-	defer f.Close()
-
-	s := bufio.NewScanner(f)
-	for s.Scan() {
-		next := s.Text()
-		lines = append(lines, next)
-	}
+	lines := utils.ReadInput("./input.txt")
 
 	for _, line := range lines {
 		dir, amt := ParseDirection(line)
